@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "719979217551",
+    "project_id": "lb-connect-sample",
+    "storage_bucket": "lb-connect-sample.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719979217551:android:46bfdd9b15af32868be6fa",
+        "android_client_info": {
+          "package_name": "com.example.lb_connect_sample_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCswvaTORFW5p53t0uHCH3E7QjuXNeS-aw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
