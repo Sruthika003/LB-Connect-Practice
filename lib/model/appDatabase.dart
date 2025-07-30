@@ -5,15 +5,19 @@ import 'package:lb_connect_sample_project/model/personal_details.dart';
 import 'package:lb_connect_sample_project/model/personal_details_dao.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
-
 part 'appDatabase.g.dart';
 
-@Database(
- version: 2,
- entities: [PersonalDetails],
-)
-abstract class AppDatabase extends FloorDatabase{
- PersonalDetailsDao get personalDetailsDao;
+@Database(version: 2, entities: [PersonalDetails])
+abstract class AppDatabase extends FloorDatabase {
+  PersonalDetailsDao get personalDetailsDao;
 
-
+  //Manual migration
+  static final migration1to2 = Migration(1, 2, (database) async {
+    await database.execute(
+      "ALTER TABLE PersonalDetails ADD COLUMN district TEXT",
+    );
+    await database.execute(
+      "ALTER TABLE PersonalDetails ADD COLUMN pinCode INTEGER",
+    );
+  });
 }

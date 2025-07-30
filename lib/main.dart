@@ -12,9 +12,11 @@
 // import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,9 +37,19 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+  // Catch uncaught Flutter errors
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+  // Optional: Catch any uncaught async errors (outside Flutter)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
   await FirebaseMessagingService().init();
   appDatabase = await $FloorAppDatabase
       .databaseBuilder("app_database.db")
+      .addMigrations([AppDatabase.migration1to2])
       .build();
   runApp(HomePage());
 }
@@ -691,7 +703,7 @@ class _BasicInfoState extends State<BasicInfo> {
                     SizedBox(width: 20),
                     ElevatedButton(
                       onPressed: () async {
-                        insertPersonalDetails();
+                       FirebaseCrashlytics.instance.crash();
                       },
                       child: Text("Add data"),
                     ),
@@ -715,15 +727,15 @@ class _BasicInfoState extends State<BasicInfo> {
                   children: [
                     SizedBox(width: 30),
                     ElevatedButton(
-                      onPressed: () async {
-                        updatePersonalDetails();
+                      onPressed: () {
+                        FirebaseCrashlytics.instance.crash();
                       },
                       child: Text("Update"),
                     ),
                     SizedBox(width: 95),
                     ElevatedButton(
                       onPressed: () async {
-                        deleteuser();
+                        deleteUser();
                       },
                       child: Text("Delete"),
                     ),
@@ -753,7 +765,9 @@ class _BasicInfoState extends State<BasicInfo> {
                                   "First Name: ${person.firstName}\n"
                                   "Middle Name: ${person.middleName}\n"
                                   "Last Name: ${person.lastName}\n"
-                                  "Email Address: ${person.emailAddress}",
+                                  "Email Address: ${person.emailAddress}\n"
+                                  "District: ${person.district}\n"
+                                  "Pincode: ${person.pinCode}",
                                 ),
                               ),
                             ),
@@ -1037,7 +1051,7 @@ class _BasicInfoState extends State<BasicInfo> {
         .fetchDataFromPersonalDetails();
     for (var personal in personalList) {
       print(
-        "firstName: ${personal.firstName}, middleName: ${personal.middleName}, lastName: ${personal.lastName}, emailAddress: ${personal.emailAddress}",
+        "firstName: ${personal.firstName}, middleName: ${personal.middleName}, lastName: ${personal.lastName}, emailAddress: ${personal.emailAddress}, district: ${personal.district}, pincode: ${personal.pinCode}",
       );
     }
   }
@@ -1052,7 +1066,7 @@ class _BasicInfoState extends State<BasicInfo> {
     );
   }
 
-  void deleteuser() async {
+  void deleteUser() async {
     await appDatabase.personalDetailsDao.deletePersonById(4);
   }
 }
